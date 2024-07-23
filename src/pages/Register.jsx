@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { routes } from '../../utils/routes';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { register } from '../services/authService';
+import { routes } from "../utils/routes";
 
 const Register = () => {
     const [username, setUsername] = useState('');
@@ -9,18 +12,21 @@ const Register = () => {
     const [confirmPassword, setConfirmPassword] = useState('');
     const navigate = useNavigate();
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        if(password !== confirmPassword) {
-            alert("Passwords do not match!");
+        if (password !== confirmPassword) {
+            toast.error("Passwords do not match!");
             return;
         }
-        // Registration logic here
-        console.log('Registration Details:', username, email, password);
-        // Navigate to login or other page after successful registration
-        navigate(routes.home);
+        try {
+            const userData = await register(username, email, password);
+            console.log('Registration successful', userData);
+            toast.success('Registration successful!');
+            navigate(routes.home);
+        } catch (error) {
+            toast.error('Failed to register');
+        }
     };
-
     return (
         <div className="flex items-center justify-center h-screen bg-gray-100">
             <div className="max-w-md w-full bg-white rounded-lg shadow-md p-6">
@@ -47,7 +53,7 @@ const Register = () => {
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                             required
-                            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-ring-500 focus:border-ring-500"
+                            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500"
                         />
                     </div>
                     <div>
@@ -81,8 +87,10 @@ const Register = () => {
                     </div>
                 </form>
             </div>
+            <ToastContainer />
         </div>
     );
+
 };
 
 export default Register;

@@ -4,6 +4,8 @@ export const routes = {
   about: "/about",
   recipe: "/recipe",
   login: "/login",
-  register: "/register"
+  register: "/register",
+  addRecipe: "/add-recipe",
+  editRecipe:"/edit-recipe"
 
 };

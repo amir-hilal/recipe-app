@@ -1,18 +1,36 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { routes } from '../../utils/routes';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { login } from '../services/authService';
+import { routes } from "../utils/routes";
+import { useAuth } from '../context/AuthContext';
 
 const Login = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
+    const [error, setError] = useState('');
     const navigate = useNavigate();
+    const { login: loginContext } = useAuth();
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        // Authentication logic here
-        console.log('Login Credentials:', username, password);
-        // Navigate to profile or home page after login
-        navigate(routes.home);
+        setError('');
+        try {
+            const userData = await login(username, password);
+            console.log('Login successful', userData);
+            if (userData && userData.data) {
+                loginContext(userData.data.token);
+                toast.success('Login successful!');
+                navigate(routes.home);
+            }
+        } catch (error) {
+            if (error.response && error.response.data && error.response.data.message) {
+                setError(error.response.data.message);
+            } else {
+                toast.error('Failed to log in');
+            }
+        }
     };
 
     return (
@@ -20,8 +38,13 @@ const Login = () => {
             <div className="max-w-md w-full bg-white rounded-lg shadow-md p-6">
                 <form onSubmit={handleSubmit} className="space-y-6">
                     <h1 className="text-center text-2xl font-semibold text-gray-700">Sign In</h1>
+                    {error && (
+                        <div className="text-red-500 text-center text-sm">
+                            {error}
+                        </div>
+                    )}
                     <div>
-                        <label htmlFor="username" className="text-sm font-medium text-gray-700">Username</label>
+                        <label htmlFor="username" className="text-sm font-medium text-gray-700">Username or Email</label>
                         <input
                             type="text"
                             id="username"
@@ -51,6 +74,7 @@ const Login = () => {
                     </div>
                 </form>
             </div>
+            <ToastContainer />
         </div>
     );
 };
