@@ -42,7 +42,7 @@ const App = () => {
               }
             />
              <Route path={routes.addRecipe} element={<PrivateRoute><AddRecipe /></PrivateRoute>} />
-             <Route path="recipe/:id" element={<RecipeDetail />} />
+             <Route path="recipe/:id" element={<PrivateRoute><RecipeDetail /></PrivateRoute>} />
              <Route path="edit-recipe/:id" element={<PrivateRoute><EditRecipe /></PrivateRoute>} />
             <Route path="*" element={<Navigate to={routes.home} replace />} />
           </Routes>
